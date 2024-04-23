@@ -1,0 +1,6 @@
+[core]
+    remote = storage
+['remote "origin"']
+    url = https://github.com/aroapv/13MBID-OCT2324.git
+['remote "storage"']
+    url = https://github.com/aroapv/13MBID-OCT2324.git
