@@ -31,6 +31,38 @@ histograma_importes.update_layout(xaxis_title='Importe solicitado', yaxis_title=
 st.plotly_chart(histograma_importes)
 
 
+#Histogramas de los importes de crédito solicitados por objetivo y estado del crédito
+chart_data = pd.concat([
+    df['objetivo_credito'],
+    df['importe_solicitado'],
+    df['estado_credito'],
+], axis=1)
+chart_data = chart_data.query("""(`estado_credito` == 0) or (`estado_credito` == 1)""")
+chart_data = chart_data.sort_values(['estado_credito', 'objetivo_credito'])
+chart_data = chart_data.rename(columns={'objetivo_credito': 'x'})
+chart_data_count = chart_data.groupby(['estado_credito','x'], dropna=False)[['importe_solicitado']].count()
+chart_data_count.columns = ['importe_solicitado||count']
+chart_data = chart_data_count.reset_index()
+chart_data = chart_data.query("""`estado_credito` == 0""")
+
+charts = []
+charts.append(go.Bar(
+    x=chart_data['x'],
+    y=chart_data['importe_solicitado||count']
+))
+figure = go.Figure(data=charts, layout=go.Layout({
+    'barmode': 'group',
+    'legend': {'orientation': 'h', 'y': -0.3},
+    'title': {'text': '(estado_credito: 0) - Count of importe_solicitado by objetivo_credito'},
+    'xaxis': {'title': {'text': 'objetivo_credito'}},
+    'yaxis': {'tickformat': '0:g', 'title': {'text': 'Count of importe_solicitado'}, 'type': 'linear'}
+}))
+figure.update_layout(title_text='Importe solicitado de crédito por objetivo y por estado del crédito = 0')
+
+st.plotly_chart(figure)
+
+
+
 # Filtros
 
 option = st.selectbox(
